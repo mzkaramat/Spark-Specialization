@@ -1,0 +1,1 @@
+This repo contains the practise stuff for the spark specialization offered by the Ecole Normal university via  the coursera platform
