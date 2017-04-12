@@ -4,7 +4,7 @@
 		module="wikipedia-build"
 		revision="0.1-SNAPSHOT"
 		status="integration"
-		publication="20170412154554"
+		publication="20170413020746"
 		e:sbtVersion="0.13" e:scalaVersion="2.10"
 	>
 		<description>
