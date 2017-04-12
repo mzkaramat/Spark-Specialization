@@ -79,7 +79,13 @@ object WikipediaRanking {
    *   several seconds.
    */
   def rankLangsReduceByKey(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = {
-        index.mapValues(_.size).collect.sortBy(-_._2).toList
+        rdd.flatMap(
+            article => {
+                (
+                    langs.filter(lang=>article.text.toLowerCase.contains(lang.toLowerCase))
+                )
+            }
+        ).map((_,1)).reduceByKey(_+_).collect.sortBy(-_._2).toList
     }
 
   def main(args: Array[String]) {
