@@ -21,9 +21,9 @@ object WikipediaRanking {
     "Objective-C", "Perl", "Scala", "Haskell", "MATLAB", "Clojure", "Groovy")
 
   val conf: SparkConf = new SparkConf().setAppName("Programming language popularity").setMaster("local")
-  val scon: SparkContext = new SparkContext(conf)
+  val sc: SparkContext = new SparkContext(conf)
   // Hint: use a combination of `sc.textFile`, `WikipediaData.filePath` and `WikipediaData.parse`
-  val wikiRdd: RDD[WikipediaArticle] = sc.textFile("file:/mnt/home/muhammadzeeshan0/realLifeExample/wikipedia.dat").map(element => parse(element)).cache
+  val wikiRdd: RDD[WikipediaArticle] = sc.textFile(WikipediaData.filePath).map(element => WikipediaData.parse(element)).cache
 
   /** Returns the number of articles on which the language `lang` occurs.
     * Hint1: consider using method `aggregate` on RDD[T].
@@ -70,7 +70,7 @@ object WikipediaRanking {
    *   several seconds.
    */
   def rankLangsUsingIndex(index: RDD[(String, Iterable[WikipediaArticle])]): List[(String, Int)] = {
-    index.mapValues(_.size).collect.sortBy(-_._2)
+    index.mapValues(_.size).collect.sortBy(-_._2).toList
   }
 
   /* (3) Use `reduceByKey` so that the computation of the index and the ranking are combined.
