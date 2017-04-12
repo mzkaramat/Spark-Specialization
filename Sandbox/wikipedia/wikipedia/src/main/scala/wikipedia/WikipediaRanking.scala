@@ -53,15 +53,12 @@ object WikipediaRanking {
    * to the Wikipedia pages in which it occurs.
    */
   def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = {
-	val output =  for (lang <- langs) yield {(lang,wikiRdd.filter(article=>article.text.contains(lang)))}
-	rdd.map(
-		article => {
-			(	article,
-				langs.filter(lang=>article.text.contains(lang))
-			)
-		}
-	)
-	output.sortBy (-_._2)
+	wikiRdd.flatMap(
+    article => {
+            val l_langs = langs.filter(lang=>article.text.toLowerCase.contains(lang.toLowerCase))
+            l_langs.map((_,article))  
+    }
+    ).groupByKey
   }
 
   /* (2) Compute the language ranking again, but now using the inverted index. Can you notice
