@@ -30,7 +30,7 @@ object WikipediaRanking {
     * Hint2: consider using method `mentionsLanguage` on `WikipediaArticle`
     */
   def occurrencesOfLang(lang: String, rdd: RDD[WikipediaArticle]): Int = {
-    rdd.filter(doc => doc.text.contains(lang)).count.toInt
+    rdd.filter(doc => doc.text.toLowerCase().contains(lang.toLowerCase())).count.toInt
   }
 
 
@@ -43,11 +43,11 @@ object WikipediaRanking {
    *   several seconds.
    */
   def rankLangs(langs: List[String], rdd: RDD[WikipediaArticle]): List[(String, Int)] = {
-
+    rdd.persist()
     val output = for (lang <- langs) yield {
-      (lang, occurrencesOfLang(lang, wikiRdd))
+      (lang, occurrencesOfLang(lang, rdd))
     }
-    output.sortBy(-_._2)
+    output.sortBy(-_._2).toList
 
   }
 
@@ -55,7 +55,7 @@ object WikipediaRanking {
    * to the Wikipedia pages in which it occurs.
    */
   def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = {
-    wikiRdd.flatMap(
+    rdd.flatMap(
       article => {
         val l_langs = langs.filter(lang => article.text.contains(lang))
         l_langs.map((_, article))
@@ -70,7 +70,7 @@ object WikipediaRanking {
    *   several seconds.
    */
   def rankLangsUsingIndex(index: RDD[(String, Iterable[WikipediaArticle])]): List[(String, Int)] = {
-    index.mapValues(_.size).collect.sortBy(-_._2).toList
+    index.mapValues(_.size).sortBy(-_._2).collect.toList
   }
 
   /* (3) Use `reduceByKey` so that the computation of the index and the ranking are combined.
@@ -87,7 +87,7 @@ object WikipediaRanking {
           langs.filter(lang => article.text.contains(lang))
           )
       }
-    ).map((_, 1)).reduceByKey(_ + _).collect.sortBy(-_._2).toList
+    ).map((_, 1)).reduceByKey(_ + _).sortBy(-_._2).collect.toList
   }
 
   def main(args: Array[String]) {
