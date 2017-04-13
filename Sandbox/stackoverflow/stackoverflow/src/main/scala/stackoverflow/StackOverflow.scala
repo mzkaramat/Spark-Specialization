@@ -99,7 +99,7 @@ class StackOverflow extends Serializable {
       highScore
     }
 
-    grouped.map((key,value)=> (key,answerHighScore(value)))
+    grouped.flatMap(_._2).groupByKey.mapValues(inp=>answerHighScore(inp.toArray))
   }
 
 
