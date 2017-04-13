@@ -38,10 +38,10 @@ object StackOverflow extends StackOverflow {
 class StackOverflow extends Serializable {
 
   /** Languages */
-  val langs =
-    List(
-      "JavaScript", "Java", "PHP", "Python", "C#", "C++", "Ruby", "CSS",
-      "Objective-C", "Perl", "Scala", "Haskell", "MATLAB", "Clojure", "Groovy")
+	  val langs =
+		List(
+		  "JavaScript", "Java", "PHP", "Python", "C#", "C++", "Ruby", "CSS",
+		  "Objective-C", "Perl", "Scala", "Haskell", "MATLAB", "Clojure", "Groovy")
 
   /** K-means parameter: How "far apart" languages should be for the kmeans algorithm? */
   def langSpread = 50000
@@ -119,9 +119,8 @@ class StackOverflow extends Serializable {
       }
     }
 
-    ???
+    scored.map(p=> (firstLangInTag(p._1.tags,langs).get*langSpread,p._2))
   }
-
 
   /** Sample the vectors */
   def sampleVectors(vectors: RDD[(Int, Int)]): Array[(Int, Int)] = {
