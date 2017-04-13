@@ -120,6 +120,7 @@ class StackOverflow extends Serializable {
     }
 
     scored.map(p=> (firstLangInTag(p._1.tags,langs).get*langSpread,p._2))
+    //scored.map((k,v)=> (firstLangInTag(k.tags,langs).get*langSpread,v))
   }
 
   /** Sample the vectors */
