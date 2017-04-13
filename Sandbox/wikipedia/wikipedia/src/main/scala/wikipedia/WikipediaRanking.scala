@@ -30,7 +30,7 @@ object WikipediaRanking {
     * Hint2: consider using method `mentionsLanguage` on `WikipediaArticle`
     */
   def occurrencesOfLang(lang: String, rdd: RDD[WikipediaArticle]): Int = {
-    rdd.filter(doc => doc.text.toLowerCase.contains(lang.toLowerCase)).count.toInt
+    rdd.filter(doc => doc.text.contains(lang)).count.toInt
   }
 
 
@@ -57,10 +57,10 @@ object WikipediaRanking {
   def makeIndex(langs: List[String], rdd: RDD[WikipediaArticle]): RDD[(String, Iterable[WikipediaArticle])] = {
     wikiRdd.flatMap(
       article => {
-        val l_langs = langs.filter(lang => article.text.toLowerCase.contains(lang.toLowerCase))
+        val l_langs = langs.filter(lang => article.text.contains(lang))
         l_langs.map((_, article))
       }
-    ).groupByKey
+    ).groupByKey.sortBy(-_._2.size)
   }
 
   /* (2) Compute the language ranking again, but now using the inverted index. Can you notice
@@ -84,7 +84,7 @@ object WikipediaRanking {
     rdd.flatMap(
       article => {
         (
-          langs.filter(lang => article.text.toLowerCase.contains(lang.toLowerCase))
+          langs.filter(lang => article.text.contains(lang))
           )
       }
     ).map((_, 1)).reduceByKey(_ + _).collect.sortBy(-_._2).toList
